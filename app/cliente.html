@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cliente para API de Restaurantes</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="container my-4">
+  <h2 class="mb-4">Cliente para API de Restaurantes</h2>
+
+  <!-- Sección 1: Obtener todos los restaurantes -->
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">Obtener todos los Restaurantes</div>
+    <div class="card-body">
+      <button class="btn btn-primary mb-3" onclick="getRestaurantes()">Obtener Restaurantes</button>
+      <pre id="restaurantes" class="bg-light p-3 rounded"></pre>
+    </div>
+  </div>
+
+  <!-- Sección 2: Obtener un restaurante y su menú -->
+  <div class="card mb-4">
+    <div class="card-header bg-success text-white">Obtener un Restaurante y su Menú</div>
+    <div class="card-body">
+      <div class="input-group mb-3">
+        <input id="restId" type="number" class="form-control" placeholder="ID del Restaurante">
+        <button class="btn btn-success" onclick="getRestaurante()">Obtener Restaurante</button>
+        <button class="btn btn-outline-dark" onclick="getRestauranteMenu()">Obtener Menú</button>
+      </div>
+      <h6>Datos del Restaurante:</h6>
+      <pre id="restaurante" class="bg-light p-3 rounded"></pre>
+      <h6>Menú del Restaurante:</h6>
+      <pre id="menuRestaurante" class="bg-light p-3 rounded"></pre>
+    </div>
+  </div>
+
+  <!-- Sección 3: Agregar ítem al menú -->
+  <div class="card mb-4">
+    <div class="card-header bg-warning">Agregar Ítem al Menú</div>
+    <div class="card-body">
+      <div class="row g-2 mb-3">
+        <div class="col-md-2">
+          <input id="menuId" type="number" class="form-control" placeholder="ID Restaurante">
+        </div>
+        <div class="col-md-4">
+          <input id="itemName" type="text" class="form-control" placeholder="Nombre del ítem">
+        </div>
+        <div class="col-md-3">
+          <input id="itemPrice" type="number" step="0.01" class="form-control" placeholder="Precio">
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-warning w-100" onclick="addMenuItem()">Agregar Ítem</button>
+        </div>
+      </div>
+      <pre id="nuevoItem" class="bg-light p-3 rounded"></pre>
+    </div>
+  </div>
+
+  <!-- Sección 4: Crear un nuevo restaurante -->
+  <div class="card mb-4">
+    <div class="card-header bg-info text-white">Crear Restaurante</div>
+    <div class="card-body">
+      <div class="row g-2 mb-3">
+        <div class="col-md-2">
+          <input id="newRestId" type="number" class="form-control" placeholder="ID">
+        </div>
+        <div class="col-md-4">
+          <input id="newRestName" type="text" class="form-control" placeholder="Nombre del Restaurante">
+        </div>
+        <div class="col-md-4">
+          <input id="newRestCity" type="text" class="form-control" placeholder="Ciudad">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-info w-100 text-white" onclick="createRestaurante()">Crear</button>
+        </div>
+      </div>
+      <pre id="nuevoRestaurante" class="bg-light p-3 rounded"></pre>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "http://127.0.0.1:5000";
+
+    // Obtener todos los restaurantes
+    async function getRestaurantes() {
+      const r = await fetch(`${BASE_URL}/api/restaurants`);
+      document.getElementById("restaurantes").textContent = JSON.stringify(await r.json(), null, 2);
+    }
+
+    // Obtener un restaurante
+    async function getRestaurante() {
+      const id = document.getElementById("restId").value;
+      const r = await fetch(`${BASE_URL}/api/restaurants/${id}`);
+      document.getElementById("restaurante").textContent = JSON.stringify(await r.json(), null, 2);
+    }
+
+    // Obtener menú del restaurante
+    async function getRestauranteMenu() {
+      const id = document.getElementById("restId").value;
+      const r = await fetch(`${BASE_URL}/api/restaurants/${id}/menu`);
+      document.getElementById("menuRestaurante").textContent = JSON.stringify(await r.json(), null, 2);
+    }
+
+    // Agregar ítem al menú
+    async function addMenuItem() {
+      const id = document.getElementById("menuId").value;
+      const name = document.getElementById("itemName").value;
+      const price = parseFloat(document.getElementById("itemPrice").value);
+
+      const r = await fetch(`${BASE_URL}/api/restaurants/${id}/menu/items`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, price})
+      });
+
+      document.getElementById("nuevoItem").textContent = JSON.stringify(await r.json(), null, 2);
+    }
+
+    // Crear restaurante
+    async function createRestaurante() {
+      const id = parseInt(document.getElementById("newRestId").value);
+      const name = document.getElementById("newRestName").value;
+      const city = document.getElementById("newRestCity").value;
+
+      const r = await fetch(`${BASE_URL}/api/restaurants`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({id, name, city})
+      });
+
+      document.getElementById("nuevoRestaurante").textContent = JSON.stringify(await r.json(), null, 2);
+    }
+  </script>
+</body>
+</html>
