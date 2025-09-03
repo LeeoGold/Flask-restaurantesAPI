@@ -1,7 +1,7 @@
 # Proyecto Flask - Trabajo colaborativo
 
 ## 🚀 Pasos para ejecutar
-1. Crear entorno virtual
+1. Crear entorno virtual y notitas
    ```bash
    python -m venv venv 
 
